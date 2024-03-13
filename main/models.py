@@ -7,3 +7,6 @@ class Company(models.Model):
     title=CharField(max_length=150,null=True,blank=True)
     email=EmailField(null=True,blank=True,unique=True)
     password=CharField(max_length=10,null=True,blank=True)
+    
+    def __str__(self):
+        return f'{self.title}'
