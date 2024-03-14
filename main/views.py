@@ -93,5 +93,13 @@ class EmployeeView(APIView):
         except Exception as e:
             ic(e)
             return sendResponse("Server Side Error",500)
-    def delete(slef,request,pk):
-        pass
+    def delete(self,request,pk):
+        """Delete Employee with their id
+        """
+        try:
+            emp=Employee.objects.filter(id=pk).first()
+            emp.delete()
+            return sendResponse("Deleted Successfully",200)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)

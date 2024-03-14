@@ -12,5 +12,6 @@ urlpatterns = [
         name="openapi-schema",
     ),
     path("employee/",views.EmployeeView.as_view()),
+    path("employee/<int:pk>",views.EmployeeView.as_view()),
      
 ]
