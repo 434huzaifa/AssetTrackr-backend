@@ -131,3 +131,14 @@ class DeviceView(APIView):
         except Exception as e:
             ic(e)
             return sendResponse("Server Side Error",500)
+        
+    def delete(self,request,pk):
+        """Delete Employee with their id
+        """
+        try:
+            device=Device.objects.filter(id=pk).first()
+            device.delete()
+            return sendResponse("Deleted Successfully",200)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
