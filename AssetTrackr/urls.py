@@ -10,8 +10,10 @@ urlpatterns = [
         "",
         get_schema_view(title="AssertTrackr", description="APIs for AssertTrackr"),
         name="openapi-schema",
-    ),
+    ), # This url open up the Automatic documentation of APIs
     path("employee/",views.EmployeeView.as_view()),
-    path("employee/<int:pk>",views.EmployeeView.as_view()),
+    path("employee/<int:pk>/",views.EmployeeView.as_view()),
+    path("device/",views.DeviceView.as_view()),
+    path("device/<int:pk>/",views.DeviceView.as_view()),
      
 ]

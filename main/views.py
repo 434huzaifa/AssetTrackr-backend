@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from icecream import ic
-from .models import Company, Employee
+from .models import Company, Employee,Device
 from .util import *
 from .serializers import *
 from django.db import IntegrityError
@@ -100,6 +100,34 @@ class EmployeeView(APIView):
             emp=Employee.objects.filter(id=pk).first()
             emp.delete()
             return sendResponse("Deleted Successfully",200)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
+
+class DeviceView(APIView):
+    @check_request_data(["condition","company","name"])
+    def post(self,request):
+        """Insert Device Information
+        """
+        try:
+            company = Company.objects.filter(id=request.data["company"]).first()
+            if company:
+                device= Device(name=request.data['name'],company=company,condition=request.data['condition'])
+                device.save()
+                return sendResponse("Device Created", 201)
+            else:
+                return sendResponse("Company not found", 400)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
+    @check_request_params(['id'])
+    def get(self,request):
+        """_summary_
+        """
+        try:
+            device=Device.objects.filter(company_id=request.query_params['id'])
+            device=DeviceSerializer(device,many=True)
+            return Response({"msg":"Success","devices":device.data},status=200)
         except Exception as e:
             ic(e)
             return sendResponse("Server Side Error",500)

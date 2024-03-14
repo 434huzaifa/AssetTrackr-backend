@@ -36,12 +36,11 @@ CONDITION_CHOICES = [
     ("Fair", "Fair"),
     ("Poor", "Poor"),
 ]
-
-
 class Device(models.Model):
     company = ForeignKey(Company, on_delete=models.CASCADE)
     condition = CharField(max_length=20, choices=CONDITION_CHOICES)
     name = CharField(max_length=150, null=True, blank=True)
+    
     def __str__(self):
         return f'{self.name}'
 
