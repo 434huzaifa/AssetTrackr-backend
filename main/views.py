@@ -8,18 +8,7 @@ from .serializers import *
 from django.db import IntegrityError
 # Create your views here.
 def check_request_data(check_list):
-    """Check data inside post request. then print data if any given key/name missing. then return accoridingly
-    Parameters
-    ----------
-    request_post : QueryDict/Dict
-        request.POST will be here
-    check_list : list
-        List of names/key should be inside request.POST
-
-    Returns
-    -------
-    bool
-        if everyitem is not found then it will return false, otherwise true
+    """Check data inside post request.
     """
     def decorator(view_func):
         @wraps(view_func)
@@ -37,18 +26,7 @@ def check_request_data(check_list):
     return decorator
 
 def check_request_params(check_list):
-    """Check data inside post request. then print data if any given key/name missing. then return accoridingly
-    Parameters
-    ----------
-    request_post : QueryDict/Dict
-        request.POST will be here
-    check_list : list
-        List of names/key should be inside request.POST
-
-    Returns
-    -------
-    bool
-        if everyitem is not found then it will return false, otherwise true
+    """Check data inside query of request.
     """
     def decorator(view_func):
         @wraps(view_func)
@@ -97,7 +75,14 @@ class CompanyView(APIView):
     @check_request_params(["id"])
     def get(self,request):
         try:
-            pass
+            company=Company.objects.filter(id=request.query_params["id"])
+            if company:
+                company_json = CompanySerializer(company).data
+                return Response(
+                        {"msg": "Data Found", "company": company_json}, status=200
+                )
+            else:
+                return Response({"msg": "Account Not found"}, status=400)
         except Exception as e:
             ic(e)
             return Response({"msg": "Server Side Error"}, status=500)
