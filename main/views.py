@@ -2,52 +2,18 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from icecream import ic
-from .models import Company
-from functools import wraps
+from .models import Company, Employee
+from .util import *
 from .serializers import *
 from django.db import IntegrityError
-# Create your views here.
-def check_request_data(check_list):
-    """Check data inside post request.
-    """
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(viewClass, *args, **kwargs):
-            post_list = list(viewClass.request.data.keys())
-            notfound = list()
-            for i in check_list:
-                if i not in post_list:
-                    notfound.append(i)
-            if len(notfound) != 0:
-                ic(notfound)
-                return Response({"msg": "Data Missing"}, status=400)
-            return view_func(viewClass, *args, **kwargs)
-        return _wrapped_view
-    return decorator
 
-def check_request_params(check_list):
-    """Check data inside query of request.
-    """
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(viewClass, *args, **kwargs):
-            post_list = list(viewClass.request.query_params.keys())
-            notfound = list()
-            for i in check_list:
-                if i not in post_list:
-                    notfound.append(i)
-            if len(notfound) != 0:
-                ic(notfound)
-                return Response({"msg": "Query missing"}, status=400)
-            return view_func(viewClass, *args, **kwargs)
-        return _wrapped_view
-    return decorator
+# Create your views here.
+
 
 class CompanyView(APIView):
-    """Use for create and login company
-    """
     @check_request_data(["email", "password1"])
     def post(self, request):
+        """Use for create and login company"""
         try:
             if "title" in request.data:
                 company = Company(
@@ -56,34 +22,76 @@ class CompanyView(APIView):
                     password=request.data["password1"],
                 )
                 company.save()
-                return Response({"msg": "Account Creation Successful"}, status=201)
+                return sendResponse("Account Creation Successful", 201)
             else:
                 company = Company.objects.filter(email=request.data["email"]).first()
                 if company:
-                    company_json = CompanySerializer(company).data
-                    return Response(
-                        {"msg": "Successfully Login", "company": company_json}, status=200
-                    )
+                    if company.password == request.data["password1"]:
+                        company_json = CompanySerializer(company).data
+                        return Response(
+                            {"msg": "Successfully Login", "company": company_json},
+                            status=200,
+                        )
+                    else: 
+                        return sendResponse("Account Information mismatch",400)
                 else:
-                    return Response({"msg": "Account Not found"}, status=400)
+                    
+                    return sendResponse("Account Not found",400)
         except IntegrityError as e:
             ic(e)
-            return Response({"msg": "Email Already Exist"}, status=400)
+            return sendResponse("Email Already Exist",400)
         except Exception as e:
             ic(e)
-            return Response({"msg": "Account Creation Failed"}, status=500)
+            return sendResponse("Server Side Error", 500)
+
     @check_request_params(["id"])
-    def get(self,request):
+    def get(self, request):
+        """Get Company email and title"""
         try:
-            company=Company.objects.filter(id=request.query_params["id"])
+            company = Company.objects.filter(id=request.query_params["id"]).first()
             if company:
-                company_json = CompanySerializer(company).data
+                company_json = CompanySerializer(company)
+
+                company_json.fields.pop("password")
                 return Response(
-                        {"msg": "Data Found", "company": company_json}, status=200
+                    {"msg": "Data Found", "company": company_json.data}, status=200
                 )
             else:
                 return Response({"msg": "Account Not found"}, status=400)
         except Exception as e:
             ic(e)
             return Response({"msg": "Server Side Error"}, status=500)
-        return Response({"msg": "Account Creation Failed"}, status=200)
+
+
+class EmployeeView(APIView):
+    @check_request_data(["company", "name", "delegate"])
+    def post(self, request):
+        """Insert employee information"""
+        try:
+            company = Company.objects.filter(id=request.data["company"]).first()
+            if company:
+                emp = Employee(
+                    company=company,
+                    name=request.data["name"],
+                    delegate=request.data["delegate"],
+                )
+                emp.save()
+                return sendResponse("Employee Created", 201)
+            else:
+                return sendResponse("Company not found", 400)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error", 500)
+    @check_request_params(["id"])
+    def get(self,request):
+        """Get al the employee information of the company
+        """
+        try:
+            emp=Employee.objects.filter(company_id=request.query_params["id"])
+            emp=EmployeeSerializer(emp,many=True)
+            return Response({"msg":"Success","employees":emp.data},status=200)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
+    def delete(slef,request,pk):
+        pass
