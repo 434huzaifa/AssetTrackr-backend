@@ -14,6 +14,7 @@ This is the backend for AssetTrakr.
 **Password:** 1
 
 **Live Link of frontend:** [https://asset-trackr-frontend-mauve.vercel.app/login](https://asset-trackr-frontend-mauve.vercel.app/login)
+
 **Frontend repo:** [https://github.com/434huzaifa/AssetTrackr-Frontend](https://github.com/434huzaifa/AssetTrackr-Frontend)
 
 ## To run locally
