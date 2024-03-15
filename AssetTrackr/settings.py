@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(_%3*21r^4ohmll=r#+q-vw)osya0&#!rf%k_jv4h%vfn^g$!z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -60,6 +60,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    'https://asset-trackr-frontend.vercel.app'
 ]
 
 ROOT_URLCONF = 'AssetTrackr.urls'
