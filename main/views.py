@@ -8,13 +8,21 @@ from django.db import IntegrityError
 from rest_framework.decorators import api_view
 from datetime import datetime
 from django.utils import timezone
+from rest_framework.schemas import AutoSchema   
 # Create your views here.
 
 
 class CompanyView(APIView):
     @check_request_data(["email", "password1"])
     def post(self, request):
-        """Use for create and login company"""
+        """
+Use for create and login company.
+Sample Data-
+{email:saadhuzaifa2497@gmail.com, password1:123,title:CodeForge}
+---
+This Same use for login
+{email:saadhuzaifa2497@gmail.com, password1:123}
+        """
         try:
             if "title" in request.data:
                 company = Company(
@@ -47,7 +55,11 @@ class CompanyView(APIView):
 
     @check_request_params(["id"])
     def get(self, request):
-        """Get Company email and title"""
+        """
+Get Company email and title
+send company id in query params.sample-
+company/?id=12sad12sdf324
+        """
         try:
             company = Company.objects.filter(id=request.query_params["id"]).first()
             if company:
@@ -67,7 +79,11 @@ class CompanyView(APIView):
 class EmployeeView(APIView):
     @check_request_data(["company", "name", "delegate"])
     def post(self, request):
-        """Insert employee information"""
+        """
+Insert employee information
+Sample Data-
+{company:-company id-,name:"Md Huzaifa",delegate:CE0}
+        """
         try:
             company = Company.objects.filter(id=request.data["company"]).first()
             if company:
@@ -86,7 +102,11 @@ class EmployeeView(APIView):
 
     @check_request_params(["id"])
     def get(self, request):
-        """Get al the employee information of the company"""
+        """
+Get all the employee information of the company
+send company id in query params. sample-
+employee/?id=1324sdf435
+        """
         try:
             emp = Employee.objects.filter(company_id=request.query_params["id"])
             emp = EmployeeSerializer(emp, many=True)
@@ -95,21 +115,14 @@ class EmployeeView(APIView):
             ic(e)
             return sendResponse("Server Side Error", 500)
 
-    # def delete(self,request,pk):
-    #     """Delete Employee with their id
-    #     """
-    #     try:
-    #         emp=Employee.objects.filter(id=pk).first()
-    #         emp.delete()
-    #         return sendResponse("Deleted Successfully",200)
-    #     except Exception as e:
-    #         ic(e)
-    #         return sendResponse("Server Side Error",500)
-
 
 @api_view(["DELETE"])  # separated delete for avoiding documentation duplication
 def EmployeeDelete(request, pk):
-    """Delete Employee with their id"""
+    """
+Delete Employee with their id
+send employee id in url params. sample
+employee/1
+    """
     try:
         emp = Employee.objects.filter(id=pk).first()
         emp.delete()
@@ -122,7 +135,11 @@ def EmployeeDelete(request, pk):
 class DeviceView(APIView):
     @check_request_data(["condition", "company", "name"])
     def post(self, request):
-        """Insert Device Information"""
+        """
+Insert Device Information
+Sample data-
+{condition:Good,company:-company id-,name:"Iphone1"}
+        """
         try:
             company = Company.objects.filter(id=request.data["company"]).first()
             if company:
@@ -141,7 +158,11 @@ class DeviceView(APIView):
 
     @check_request_params(["id"])
     def get(self, request):
-        """_summary_"""
+        """
+Get all the device of a company
+send company id in query params. sample-
+device/?id=1324sdf435
+        """
         try:
             device = Device.objects.filter(company_id=request.query_params["id"])
             device = DeviceSerializer(device, many=True)
@@ -150,21 +171,14 @@ class DeviceView(APIView):
             ic(e)
             return sendResponse("Server Side Error", 500)
 
-    # def delete(self,request,pk):
-    #     """Delete Device with their id
-    #     """
-    #     try:
-    #         device=Device.objects.filter(id=pk).first()
-    #         device.delete()
-    #         return sendResponse("Deleted Successfully",200)
-    #     except Exception as e:
-    #         ic(e)
-    #         return sendResponse("Server Side Error",500)
-
 
 @api_view(["DELETE"])
 def DeviceDelete(request, pk):
-    """Delete Device with their id"""
+    """
+Delete Device with their id
+send device id in url params. sample
+device/1
+    """
     try:
         device = Device.objects.filter(id=pk).first()
         device.delete()
@@ -176,7 +190,9 @@ def DeviceDelete(request, pk):
 
 @api_view(["GET"])
 def CheckOutInfo(request):
-    """Get Information for the checkout form"""
+    """
+Get Information for the checkout form. device and employee list. only name and id available
+    """
     try:
         devices = Device.objects.values("name", "id").filter(
             company_id=request.query_params["id"]
@@ -195,7 +211,11 @@ class CheckoutView(APIView):
         ["employee", "device", "promised_return", "checkout_condition", "company"]
     )
     def post(self, request):
-        """save checkout information"""
+        """
+save checkout information
+sample data-
+{employee:-employee id-,device:-device id-,promised_return:12-02-2024,checkout_condition:Good,company:-company id-}
+        """
         try:
             company = Company.objects.filter(id=request.data["company"]).first()
             employee = Employee.objects.filter(id=request.data["employee"]).first()
@@ -220,7 +240,11 @@ class CheckoutView(APIView):
 
     @check_request_params(["id", "return"])
     def get(self, request):
-        """get all checkouts information based on return"""
+        """
+get all checkouts information based on return
+send company id and return.return equal false for item that did not returned and true for returned. sample
+checkout/id=asca12sd1&return=false
+        """
         try:
             checkouts = None
             if request.query_params["return"] == "false":
@@ -244,6 +268,11 @@ class CheckoutView(APIView):
 
     @check_request_data(["id", "return_condition"])
     def patch(self, request):
+        """
+Update checkout data if returned.
+sample data- 
+{id:-checkout id-,return_condition:Good}
+        """
         try:
             checkout = Checkout.objects.filter(id=request.data["id"]).first()
             if checkout:

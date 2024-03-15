@@ -19,5 +19,6 @@ urlpatterns = [
     path("device/<int:pk>/",views.DeviceDelete),
     path("checkout-info/",views.CheckOutInfo),
     path("checkout/",views.CheckoutView.as_view())
+    
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
