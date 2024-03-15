@@ -60,7 +60,8 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    'https://asset-trackr-frontend.vercel.app'
+    'https://asset-trackr-frontend.vercel.app',
+    'https://assettrackr-backend.onrender.com'
 ]
 
 ROOT_URLCONF = 'AssetTrackr.urls'
