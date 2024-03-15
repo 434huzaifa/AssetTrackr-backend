@@ -15,6 +15,7 @@ urlpatterns = [
     path("employee/<int:pk>/",views.EmployeeDelete),
     path("device/",views.DeviceView.as_view()),
     path("device/<int:pk>/",views.DeviceDelete),
-    path("checkout-info/",views.CheckOutInfo)
+    path("checkout-info/",views.CheckOutInfo),
+    path("checkout/",views.CheckoutView.as_view())
      
 ]

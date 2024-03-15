@@ -50,6 +50,7 @@ class Checkout(models.Model):
     employee = ForeignKey(Employee, on_delete=models.CASCADE)
     device = ForeignKey(Device, on_delete=models.CASCADE)
     checkout_date = DateField(default=timezone.now)
+    promised_return = DateField(null=True, blank=True)
     return_date = DateField(null=True, blank=True)
     checkout_condition = CharField(max_length=20, choices=CONDITION_CHOICES)
     return_condition = CharField(max_length=20, choices=CONDITION_CHOICES, null=True, blank=True)
