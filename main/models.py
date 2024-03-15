@@ -5,7 +5,8 @@ from django.db.models import (
     UUIDField,
     ForeignKey,
     DateTimeField,
-    BooleanField
+    BooleanField,
+    DateField
 )
 import uuid
 from django.utils import timezone
@@ -45,10 +46,11 @@ class Device(models.Model):
         return f'{self.name}'
 
 class Checkout(models.Model):
+    company = ForeignKey(Company, on_delete=models.CASCADE)
     employee = ForeignKey(Employee, on_delete=models.CASCADE)
     device = ForeignKey(Device, on_delete=models.CASCADE)
-    checkout_date = DateTimeField(default=timezone.now)
-    return_date = DateTimeField(null=True, blank=True)
+    checkout_date = DateField(default=timezone.now)
+    return_date = DateField(null=True, blank=True)
     checkout_condition = CharField(max_length=20, choices=CONDITION_CHOICES)
     return_condition = CharField(max_length=20, choices=CONDITION_CHOICES, null=True, blank=True)
     isReturn = BooleanField(default=False)

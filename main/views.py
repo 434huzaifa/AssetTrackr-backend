@@ -1,12 +1,12 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from icecream import ic
-from .models import Company, Employee,Device
+from .models import Company, Employee,Device,Checkout
 from .util import *
 from .serializers import *
 from django.db import IntegrityError
 from rest_framework.decorators import api_view
+from datetime import datetime
 # Create your views here.
 
 
@@ -179,3 +179,34 @@ def CheckOutInfo(request):
         ic(e)
         return sendResponse("Server Side Error",500)
 
+class CheckoutView(APIView):
+    @check_request_data(["employee","device","return_date","checkout_condition","company"])
+    def post(self,request):
+        try:
+            company=Company.objects.filter(id=request.data["company"])
+            employee=Employee.objects.filter(id=request.data["employee"]).first()
+            device=Device.objects.filter(id=request.data["device"]).first()
+            if employee and device and company:
+                checkout=Checkout(company=company,employee=employee,device=device,return_date=datetime.strptime(request.data["retrun_date"],"%d-%m-%Y").date(),checkout_condition=request.data["checkout_condition"])
+                checkout.save()
+                return sendResponse("Device Checked Out",200)
+            else:
+                return sendResponse("Device Check out failed",400)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
+    @check_request_params(["id","return"])
+    def get(self,request):
+        try:
+            checkouts=None
+            if request.query_params["return"] == "false":
+                checkouts=Checkout.objects.filter(company_id=request.query_params['id'],isReturn=False)
+            elif request.query_params["return"]=="true":
+                checkouts=Checkout.objects.filter(company_id=request.query_params['id'],isReturn=True)
+            if checkouts:
+                return Response({"msg":"Success","checkouts":checkouts},status=200)
+            else:
+                return sendResponse("Invalid Query",400)
+        except Exception as e:
+            ic(e)
+            return sendResponse("Server Side Error",500)
