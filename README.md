@@ -6,7 +6,15 @@ This is the backend for AssetTrakr.
 - djangorestframework
 - sqlite3
 
-**Live Link:** [https://assettrackr-backend.onrender.com](https://assettrackr-backend.onrender.com)
+**Live Link of backend:** [https://assettrackr-backend.onrender.com](https://assettrackr-backend.onrender.com)
+## Admin panel
+
+**User:** huzaifa
+
+**Password:** 1
+
+**Live Link of frontend:** [https://asset-trackr-frontend-mauve.vercel.app/login](https://asset-trackr-frontend-mauve.vercel.app/login)
+**Frontend repo:** [https://github.com/434huzaifa/AssetTrackr-Frontend](https://github.com/434huzaifa/AssetTrackr-Frontend)
 
 ## To run locally
 
