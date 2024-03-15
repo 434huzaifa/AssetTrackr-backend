@@ -6,7 +6,7 @@ from .models import Company, Employee,Device
 from .util import *
 from .serializers import *
 from django.db import IntegrityError
-
+from rest_framework.decorators import api_view
 # Create your views here.
 
 
@@ -62,7 +62,6 @@ class CompanyView(APIView):
             ic(e)
             return Response({"msg": "Server Side Error"}, status=500)
 
-
 class EmployeeView(APIView):
     @check_request_data(["company", "name", "delegate"])
     def post(self, request):
@@ -93,7 +92,19 @@ class EmployeeView(APIView):
         except Exception as e:
             ic(e)
             return sendResponse("Server Side Error",500)
-    def delete(self,request,pk):
+    # def delete(self,request,pk):
+    #     """Delete Employee with their id
+    #     """
+    #     try:
+    #         emp=Employee.objects.filter(id=pk).first()
+    #         emp.delete()
+    #         return sendResponse("Deleted Successfully",200)
+    #     except Exception as e:
+    #         ic(e)
+    #         return sendResponse("Server Side Error",500)
+
+@api_view(['DELETE']) # separated delete for avoiding documentation duplication
+def EmployeeDelete(request,pk):
         """Delete Employee with their id
         """
         try:
@@ -132,8 +143,20 @@ class DeviceView(APIView):
             ic(e)
             return sendResponse("Server Side Error",500)
         
-    def delete(self,request,pk):
-        """Delete Employee with their id
+    # def delete(self,request,pk):
+    #     """Delete Device with their id
+    #     """
+    #     try:
+    #         device=Device.objects.filter(id=pk).first()
+    #         device.delete()
+    #         return sendResponse("Deleted Successfully",200)
+    #     except Exception as e:
+    #         ic(e)
+    #         return sendResponse("Server Side Error",500)
+        
+@api_view(['DELETE'])
+def DeviceDelete(request,pk):
+        """Delete Device with their id
         """
         try:
             device=Device.objects.filter(id=pk).first()
@@ -142,3 +165,17 @@ class DeviceView(APIView):
         except Exception as e:
             ic(e)
             return sendResponse("Server Side Error",500)
+
+
+@api_view(["GET"])
+def CheckOutInfo(request):
+    """Get Information for the checkout form
+    """
+    try:
+        devices=Device.objects.values("name","id").filter(company_id=request.query_params['id'])
+        employees=Employee.objects.values("name","id").filter(company_id=request.query_params['id'])
+        return Response({"msg":"Success","devices":devices,"employees":employees})
+    except Exception as e:
+        ic(e)
+        return sendResponse("Server Side Error",500)
+

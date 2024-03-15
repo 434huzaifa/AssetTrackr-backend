@@ -12,8 +12,9 @@ urlpatterns = [
         name="openapi-schema",
     ), # This url open up the Automatic documentation of APIs
     path("employee/",views.EmployeeView.as_view()),
-    path("employee/<int:pk>/",views.EmployeeView.as_view()),
+    path("employee/<int:pk>/",views.EmployeeDelete),
     path("device/",views.DeviceView.as_view()),
-    path("device/<int:pk>/",views.DeviceView.as_view()),
+    path("device/<int:pk>/",views.DeviceDelete),
+    path("checkout-info/",views.CheckOutInfo)
      
 ]
